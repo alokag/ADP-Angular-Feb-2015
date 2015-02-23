@@ -17,60 +17,98 @@
 	<script>
 	//Model
 	function SalaryCalculator(){
-		this.basic = 0;
-		this.hra = 0;
-		this.da = 0;
-		this.tax = 0;
-		this.salary = 0;
-
-		var _onSalaryChangeSubscribers = [];
-		this.addOnSalaryChange = function(subscriberFn){
-			_onSalaryChangeSubscribers.push(subscriberFn);
+		var _data = {
+			basic : 0,
+			hra : 0,
+			da : 0,
+			tax :0,
+			salary: 0
 		};
 
-		this.triggerSalaryChange = function(){
-			for(var i=0; i< _onSalaryChangeSubscribers.length; i++){
-				var subscriptionFn = _onSalaryChangeSubscribers[i];
-				subscriptionFn();
+		/*this.val = function(attrName, value){
+			if (arguments.length === 1) return _data[attrName];
+			_data[attrName] = value;
+			//trigger Change for 'attrName'
+		}*/
+
+		this.get = function(attrName){
+			return _data[attrName];
+		};
+		this.set = function(attrName, value){
+			_data[attrName] = value;
+			//trigger Change for 'attrName'
+			trigger(attrName);
+		};
+		var _subscribers = { };
+
+		this.addSubscriber = function(attrName, subscriptionFn){
+			_subscribers[attrName] = _subscribers[attrName] || [];
+			_subscribers[attrName].push(subscriptionFn);
+		};
+
+		this.removeSubscriber = function(attrName, subscriptionFn){
+			//fill in the blanks
+		};
+
+		function trigger(attrName){
+			var _subscriptionFns = _subscribers[attrName] || [];
+			for(var i=0; i < _subscriptionFns.length; i++){
+				var subscriberFn = _subscriptionFns[i];
+				subscriberFn();
 			}
 		}
+
 	}
 	SalaryCalculator.prototype.calculate = function(){
-		var gross = this.basic + this.hra + this.da;
-		var net = gross * ((100-this.tax)/100);
-		this.salary = net;
-		this.triggerSalaryChange();
+		var gross = this.get('basic') + this.get('hra') + this.get('da');
+		var net = gross * ((100-this.get('tax'))/100);
+		this.set('salary', net);
 	}
 
 	//View
 	$(function(){
 		window.calculator = new SalaryCalculator();
 
-		calculator.addOnSalaryChange(function(){
-			$("#divResult").html(calculator.salary);
+		//Model change Event Subscriptions
+		calculator.addSubscriber('salary', function(){
+			$("#divResult").html(calculator.get('salary'));
+		});
+		calculator.addSubscriber('basic', function(){
+			$("#txtBasic").val(calculator.get('basic'));
+		});
+		calculator.addSubscriber('hra', function(){
+			$("#txtHra").val(calculator.get('hra'));
+		});
+		calculator.addSubscriber('da', function(){
+			$("#txtDa").val(calculator.get('da'));
+		});
+		calculator.addSubscriber('tax', function(){
+			//make the following line work
+			//$("#rangeTax").val(this.get('tax'));
+
+			$("#rangeTax").val(calculator.get('tax'));
+			$("#spanTax").html(calculator.get('tax') + '%');
 		});
 
+		//UI interation events
 		$("#txtBasic").change(function(){
-			calculator.basic = parseInt(this.value,10);
+			calculator.set('basic', parseInt(this.value,10));
 		});
 		$("#txtHra").change(function(){
-			calculator.hra = parseInt(this.value,10);
+			calculator.set('hra', parseInt(this.value,10));
 		});
 		$("#txtDa").change(function(){
-			calculator.da = parseInt(this.value,10);
+			calculator.set('da', parseInt(this.value,10));
 		});
 		$("#rangeTax").change(function(){
-			calculator.tax = parseInt(this.value,10);
+			calculator.set('tax', parseInt(this.value,10));
 		});
 
 		$("#btnCalculate").click(function(){
 			calculator.calculate();
-			$("#divResult").html(calculator.salary);
 		});
 
-		$("#rangeTax").change(function(){
-			$("#spanTax").html(this.value + '%');
-		});
+		
 	});
 	</script>
 </head>
