@@ -15,6 +15,8 @@ var spinner = (function(){
 	}
 })()//;
 
+
+
 //The created object should exihibit the following behaviour
 
 spinner.up() // => 1
@@ -28,3 +30,8 @@ spinner.down() // => 1
 spinner.down() // => 0
 spinner.down() // => -1
 
+function Spinner(){
+	var count = 0;
+	this.up = function(){ return ++count;};
+	this.down = function(){ return --count; };
+}

@@ -113,8 +113,8 @@ print("Filtering", function(){
 				return product.cost > 50;
 			}
 			function negate(criteria){
-				return function(product){
-					return !criteria(product);
+				return function(){
+					return !criteria.apply(this, arguments);
 				}
 			}
 			var affordableProductCriteria = negate(costlyProductCriteria);
