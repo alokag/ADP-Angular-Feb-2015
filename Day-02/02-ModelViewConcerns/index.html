@@ -22,27 +22,52 @@
 		this.da = 0;
 		this.tax = 0;
 		this.salary = 0;
+
+		var _onSalaryChangeSubscribers = [];
+		this.addOnSalaryChange = function(subscriberFn){
+			_onSalaryChangeSubscribers.push(subscriberFn);
+		};
+
+		this.triggerSalaryChange = function(){
+			for(var i=0; i< _onSalaryChangeSubscribers.length; i++){
+				var subscriptionFn = _onSalaryChangeSubscribers[i];
+				subscriptionFn();
+			}
+		}
 	}
 	SalaryCalculator.prototype.calculate = function(){
 		var gross = this.basic + this.hra + this.da;
 		var net = gross * ((100-this.tax)/100);
 		this.salary = net;
+		this.triggerSalaryChange();
 	}
 
 	//View
 	$(function(){
-		var calculator = new SalaryCalculator();
+		window.calculator = new SalaryCalculator();
 
-		$("#btnCalculate").click(function(){
-			calculator.basic = parseInt($("#txtBasic").val(),10);
-			calculator.hra = parseInt($("#txtHra").val(),10);
-			calculator.da = parseInt($("#txtDa").val(),10);
-			calculator.tax = parseInt($("#rangeTax").val(),10);
-
-			calculator.calculate();
-
+		calculator.addOnSalaryChange(function(){
 			$("#divResult").html(calculator.salary);
 		});
+
+		$("#txtBasic").change(function(){
+			calculator.basic = parseInt(this.value,10);
+		});
+		$("#txtHra").change(function(){
+			calculator.hra = parseInt(this.value,10);
+		});
+		$("#txtDa").change(function(){
+			calculator.da = parseInt(this.value,10);
+		});
+		$("#rangeTax").change(function(){
+			calculator.tax = parseInt(this.value,10);
+		});
+
+		$("#btnCalculate").click(function(){
+			calculator.calculate();
+			$("#divResult").html(calculator.salary);
+		});
+
 		$("#rangeTax").change(function(){
 			$("#spanTax").html(this.value + '%');
 		});
