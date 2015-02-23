@@ -18,4 +18,3 @@ var isPrime = (function(){
   }
 })()
 
-var x = (1 + 2)
