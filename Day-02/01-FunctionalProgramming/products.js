@@ -124,3 +124,12 @@ print("Filtering", function(){
 		
 	});
 });
+
+function memoize(fn){
+	var cache={};
+	return function(){
+		var key = JSON.stringify(arguments);
+		if (typeof cache[key] === "undefined") cache[key] = fn.apply(arguments,this);
+		return cache[key];
+	}
+}
