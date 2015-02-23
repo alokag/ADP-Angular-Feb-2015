@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="greetingApp">
+<head>
+	<meta charset="UTF-8">
+	<title>Greeting Page</title>
+	<style>
+	label{
+		display: block;
+	}
+	</style>
+	<script src="angular.js"></script>
+	<script>
+		var greetingApp = angular.module('greetingApp', []);
+		greetingApp.run(function($rootScope){
+			$rootScope.initTime = new Date();
+			$rootScope.greetCount = 100;
+			$rootScope.incGreetCount = function(){
+				$rootScope.greetCount += 1;
+			}
+			$rootScope.lastName = "LastName in root";
+		});
+		greetingApp.controller('greetCtrl', function($scope){
+			console.dir($scope);
+			$scope.firstName = "[Enter the firstname]";
+			//$scope.lastName = "[Enter the lastname]";
+			$scope.greetMsg = "[Greeting message will be displayed here]";
+			$scope.greet = function(){
+				$scope.incGreetCount();
+				$scope.greetMsg = "Hi " + $scope.firstName + " " + $scope.lastName + " , Have a nice day!";
+			}
+		})
+
+	</script>
+	
+</head>
+<body>
+	<h1>Greet # : {{greetCount}}</h1>
+
+	<div data-ng-controller="greetCtrl">
+		<label for="">First Name :</label>
+		<input type="text" data-ng-model="firstName" >
+		<label for="">Last Name :</label>
+		<input type="text" data-ng-model="lastName" >
+		<br>
+		<input type="button" value="Greet" data-ng-click="greet()">
+		<div>{{greetMsg}}</div>	
+		
+	</div>
+	<div>
+		<hr>
+	<div><label for="">Basic :</label><input type="text" name="" id="txtBasic"></div>
+	<div><label for="">HRA :</label><input type="text" name="" id="txtHra"></div>
+	<div><label for="">DA :</label><input type="text" name="" id="txtDa"></div>
+	<div>
+		<label for="">Tax :</label>
+		<input type="range" name="" id="rangeTax" min="0" max="30" value="0">
+		<span id="spanTax">[Tax%]</span>
+	</div>
+	<div><input type="button" value="Calculate" id="btnCalculate"></div>
+	<div>
+		<div id="divResult">[Salary]</div>
+	</div>
+	</div>
+</body>
+</html>
