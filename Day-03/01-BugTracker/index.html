@@ -54,7 +54,7 @@
 
 	 bugTrackerApp.service("bugRepository", function(Bug, $window){
 	 	var storage = $window.localStorage;
-	 	$http.
+	 	
 	 	this.getAll = function(){
 	 		var result = [];
 	 		for(var i=0; i < storage.length; i++){
@@ -66,7 +66,7 @@
 	 		}
 	 		return result;
 	 	}
-	 	ths.save = function(bug){
+	 	this.save = function(bug){
 	 		storage.setItem(bug.id, JSON.stringify(bug));
 	 	}
 	 	this.remove = function(bug){
@@ -106,9 +106,50 @@
 	 });
 	*/
 
-	 bugTrackerApp.controller("bugCtrl", function($scope, Bug, bugRepository){
+	/*
+	bugTrackerApp.service("bugService", function($http, Bug, $q){
+		this.getAll = function(){
+			var deferred = $q.defer();
+			var promise = $http({
+		 		method : "get",
+		 		url : "bugsData.json"
+		 	});
+		 	promise.then(function(response){
+		 		var result = response.data.bugs.map(function(bugData){
+		 			return new Bug(bugData);
+		 		});
+		 		deferred.resolve(result);
+		 	});
+		 	return deferred.promise;
+		}
+	})
+	*/
+	bugTrackerApp.service("bugService", function($http, Bug, $q){
+		this.getAll = function(){
+			
+			var promise = $http({
+		 		method : "get",
+		 		url : "bugsData.json"
+		 	});
+		 	return promise.then(function(response){
+		 		var result = response.data.bugs.map(function(bugData){
+		 			return new Bug(bugData);
+		 		});
+		 		return result;
+		 	});
+		 	
+		}
+	})
+	 bugTrackerApp.controller("bugCtrl", function($scope, Bug, bugRepository, bugService){
 	 	
-	 	$scope.bugs = bugRepository.getAll();
+	 	//$scope.bugs = bugRepository.getAll();
+
+	 	$scope.bugs = [];
+	 	bugService.getAll().then(function(bugs){
+	 		$scope.bugs=bugs;
+	 	});
+
+	 	
 
 	 	$scope.add = function(newBugTitle){
 	 		
@@ -118,7 +159,7 @@
 	 	};
 
 	 	$scope.close = function(bug){
-	 		bug.isClosed = true;
+	 		bug.close();
 	 	};
 
 	 	$scope.removeClosed = function(){
@@ -168,7 +209,7 @@
 				data-ng-repeat="bug in bugs" 
 				data-ng-click="close(bug)"
 				data-ng-class="{closed : bug.isClosed}"
-				><span class="bugTitle">{{bug.title | trimText:20}}</span> - <span class="timeStamp">{{bug.createdAt | toMoment }}</span></li>
+				><span class="bugTitle">{{bug.title | trimText:40}}</span> - <span class="timeStamp">{{bug.createdAt | toMoment }}</span></li>
 		</ol>
 	</div>
 </body>
