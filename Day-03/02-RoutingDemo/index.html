@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="myApp">
+<head>
+	<meta charset="UTF-8">
+	<title>Routing Demo</title>
+	<style>
+	ol {
+		list-style: none;
+	}
+	li{
+		display : inline;
+	}
+	</style>
+	<script src="angular.js"></script>
+	<script src="angular-route.js"></script>
+	<script>
+	var myApp = angular.module("myApp", ["ngRoute"]);
+	myApp.config(function($routeProvider){
+		$routeProvider
+			.when("/products/:productId", {
+				templateUrl : "products.template.html",
+				controller : "productController"
+			})
+			.when("/customers/:customerId", {
+				templateUrl : "customers.template.html",
+				controller : "customerController"
+			})
+			.otherwise({
+				redirectTo : "/products/101"
+			});
+	});
+	myApp.controller("productController", function($scope, $routeParams){
+		console.log("productController - ", $routeParams);
+		$scope.msg = "Information about product - " + $routeParams.productId + " will be displayed here";
+	});
+	myApp.controller("customerController", function($scope, $routeParams){
+		console.log("customerController - ", $routeParams);
+		$scope.msg = "Information about customer - " + $routeParams.customerId + " will be displayed here";
+	});
+	</script>
+</head>
+<body>
+	<h1>Routing App</h1>
+	<ol>
+		<li><a href="#/products/P101">Products</a></li>
+		<li><a href="#/customers/C102">Customers</a></li>
+	</ol>
+	<hr>
+	<ng-view></ng-view>
+</body>
+</html>

@@ -35,8 +35,12 @@
 	 </style>
 	 <script src="angular.js"></script>
 	 <script src="moment.js"></script>
+	 <script src="utils.js"></script>
 	 <script>
-	 var bugTrackerApp = angular.module("bugTrackerApp", ['ng']);
+	
+
+
+	 var bugTrackerApp = angular.module("bugTrackerApp", ['ng', 'utils']);
 
 	 bugTrackerApp.factory("Bug", function(){
 	 	function Bug(defaults){
@@ -186,13 +190,6 @@
 	 });
 	 
 
-	 bugTrackerApp.filter("toMoment", function(myMoment){
-	 	return function(data){
-	 		return myMoment(data).fromNow();
-	 	}
-	 });
-
-	 bugTrackerApp.value("myMoment", moment);
 	 </script>
 </head>
 
